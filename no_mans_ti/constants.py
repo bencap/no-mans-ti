@@ -4,10 +4,14 @@ from enum import Enum
 
 ## Planet area stuff
 
+
 @dataclass
 class PlanetValues:
     resources: int
     influence: int
+
+    # Prevent accidental modification of planet values by default
+    frozen = True
 
 
 class PlanetTrait(Enum):
@@ -17,7 +21,6 @@ class PlanetTrait(Enum):
 
 
 class TechnologySpecialty(Enum):
-    NONE = 0
     BLUE = 1
     RED = 2
     GREEN = 3
@@ -25,6 +28,7 @@ class TechnologySpecialty(Enum):
 
 
 ## Space area stuff
+
 
 class Anomalies(Enum):
     ASTEROID_FIELD = 1
@@ -38,4 +42,3 @@ class Wormholes(Enum):
     BETA = 2
     DELTA = 3
     GAMMA = 4
-    ION = 5

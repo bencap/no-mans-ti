@@ -1,20 +1,13 @@
 import random
 
-from no_mans_ti.constants import PlanetTrait, TechnologySpecialty, Anomalies, Wormholes
+from no_mans_ti.constants import Anomalies, Wormholes
 from no_mans_ti.models.planet import Planet
 from no_mans_ti.models.space import Space
 from no_mans_ti.models.system import System
 
 
 def generate_planet():
-    resources = random.randint(0, 4)
-    influence = random.randint(0, 4)
-    trait = random.choice(PlanetTrait._member_names_)
-    specialty = random.choice(TechnologySpecialty._member_names_)
-
-    return Planet(
-        resources=resources, influence=influence, trait=trait, specialty=specialty
-    )
+    return Planet()
 
 
 def generate_space():
