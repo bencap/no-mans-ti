@@ -2,7 +2,23 @@ import random
 
 from typing import Optional
 
-from no_mans_ti.constants import PlanetTrait, TechnologySpecialty, PlanetValues
+from no_mans_ti.constants import (
+    PlanetTrait,
+    TechnologySpecialty,
+    PlanetValues,
+    BASE_RES_INF_DISTRIBUTION,
+    ZERO_SEEDED_RES_INF_DISTRIBUTION,
+    ONE_SEEDED_RES_INF_DISTRIBUTION,
+    TWO_SEEDED_RES_INF_DISTRIBUTION,
+    THREE_SEEDED_RES_INF_DISTRIBUTION,
+    FOUR_SEEDED_RES_INF_DISTRIBUTION,
+    FIVE_SEEDED_RES_INF_DISTRIBUTION,
+    HAZARDOUS_SKEWED,
+    CULTURAL_SKEWED,
+    INDUSTRIAL_SKEWED,
+    BASE_SPECIALTY_DISTRIBUTION
+)
+from no_mans_ti.lib.planet_names import random_planet_name
 
 
 # TODO: Support planet attachments
@@ -28,47 +44,36 @@ class Planet:
             assert trait, "Planet trait should not be `None`"
             self.trait = trait
 
+    def __str__(self):
+        """String repr."""
+        return f"\tResources: {self.values.resources}\n\tIfnluence: {self.values.influence}\n\tTrait: {self.trait}\n\tSpecialty: {self.specialty}"
+
     def randomize_planet(self):
         """
         Randomizes the resources, influence, trait, and technology
         specialty of this planet.
         """
 
-        def randomize_planet_values(self):
+        def randomize_planet_values():
             """
             Generate random resource and influence values based on a distribution
             of original values and a distribution of secondary values, which depend
             on the original value selected.
             """
-            value_distribution = (
-                [0] * 10 + [1] * 20 + [2] * 30 + [3] * 25 + [4] * 10 + [5] * 5
-            )
-            seed_value = random.choice(value_distribution)
+            seed_value = random.choice(BASE_RES_INF_DISTRIBUTION)
 
             if seed_value == 0:
-                variable_distribution = (
-                    [0] * 0 + [1] * 5 + [2] * 20 + [3] * 25 + [4] * 30 + [5] * 20
-                )
+                variable_distribution = ZERO_SEEDED_RES_INF_DISTRIBUTION
             elif seed_value == 1:
-                variable_distribution = (
-                    [0] * 5 + [1] * 10 + [2] * 25 + [3] * 35 + [4] * 25 + [5] * 0
-                )
+                variable_distribution = ONE_SEEDED_RES_INF_DISTRIBUTION
             elif seed_value == 2:
-                variable_distribution = (
-                    [0] * 10 + [1] * 20 + [2] * 30 + [3] * 40 + [4] * 0 + [5] * 0
-                )
+                variable_distribution = TWO_SEEDED_RES_INF_DISTRIBUTION
             elif seed_value == 3:
-                variable_distribution = (
-                    [0] * 25 + [1] * 50 + [2] * 25 + [3] * 0 + [4] * 0 + [5] * 0
-                )
+                variable_distribution = THREE_SEEDED_RES_INF_DISTRIBUTION
             elif seed_value == 4:
-                variable_distribution = (
-                    [0] * 50 + [1] * 50 + [2] * 25 + [3] * 35 + [4] * 25 + [5] * 0
-                )
+                variable_distribution = FOUR_SEEDED_RES_INF_DISTRIBUTION
             elif seed_value == 5:
-                variable_distribution = (
-                    [0] * 100 + [1] * 0 + [2] * 0 + [3] * 0 + [4] * 0 + [5] * 0
-                )
+                variable_distribution = FIVE_SEEDED_RES_INF_DISTRIBUTION
             else:
                 raise ValueError(
                     f"Selected planet value ({seed_value}) should not be greater than 5."
@@ -76,14 +81,13 @@ class Planet:
 
             generated_value = random.choice(variable_distribution)
 
+            # Randomly decide if the seed is the resource or influence value.
             if random.randint(0, 1):
                 return seed_value, generated_value
             else:
                 return generated_value, seed_value
 
-        def randomize_planet_trait(
-            self, resources: Optional[int], influence: Optional[int]
-        ):
+        def randomize_planet_trait(resources: Optional[int], influence: Optional[int]):
             """
             Generate a random planet trait weighted based on the provided
             resource and influence values. Alternatively, return a random
@@ -94,41 +98,20 @@ class Planet:
 
             res_inf_diff = resources - influence
             if res_inf_diff > 1.5:
-                trait_distribution = (
-                    [PlanetTrait.HAZARDOUS] * 50
-                    + [PlanetTrait.INDUSTRIAL] * 25
-                    + [PlanetTrait.CULTURAL] * 25
-                )
+                trait_distribution = HAZARDOUS_SKEWED
             elif res_inf_diff < -1.5:
-                trait_distribution = (
-                    [PlanetTrait.HAZARDOUS] * 25
-                    + [PlanetTrait.INDUSTRIAL] * 25
-                    + [PlanetTrait.CULTURAL] * 50
-                )
+                trait_distribution = CULTURAL_SKEWED
             else:
-                trait_distribution = (
-                    [PlanetTrait.HAZARDOUS] * 25
-                    + [PlanetTrait.INDUSTRIAL] * 50
-                    + [PlanetTrait.CULTURAL] * 25
-                )
+                trait_distribution = INDUSTRIAL_SKEWED
 
             return random.choice(trait_distribution)
 
-        def randomize_planet_specialty(self, no_specialty=0.75):
+        def randomize_planet_specialty():
             """
-            Generate a random planet specialty, or None, based on
-            the provided likelihood no specialty will be generated.
+            Generate a random planet specialty, or None.
             """
-            if random.random() < 0.75:
-                return None
-
             return random.choice(
-                [
-                    TechnologySpecialty.BLUE,
-                    TechnologySpecialty.GREEN,
-                    TechnologySpecialty.RED,
-                    TechnologySpecialty.YELLOW,
-                ]
+                BASE_SPECIALTY_DISTRIBUTION
             )
 
         resources, influence = randomize_planet_values()
@@ -149,3 +132,8 @@ class Planet:
             return PlanetValues(0, self.values.influence)
         else:
             return PlanetValues(self.values.resources / 2, self.values.influence / 2)
+
+
+if __name__ == "__main__":
+    print(random_planet_name())
+    print(Planet())
