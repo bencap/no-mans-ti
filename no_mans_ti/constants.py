@@ -44,6 +44,34 @@ class Wormholes(Enum):
     GAMMA = 4
 
 
+## System Stuff
+
+
+class Direction(Enum):
+    TOP = 1
+    TOP_RIGHT = 2
+    BOTTOM_RIGHT = 3
+    BOTTOM = 4
+    BOTTOM_LEFT = 5
+    TOP_LEFT = 6
+
+    def mirror(self):
+        if self.name == Direction.BOTTOM.name:
+            return Direction.TOP
+        elif self.name == Direction.TOP.name:
+            return Direction.BOTTOM
+        elif self.name == Direction.TOP_RIGHT.name:
+            return Direction.BOTTOM_LEFT
+        elif self.name == Direction.BOTTOM_LEFT.name:
+            return self.TOP_RIGHT
+        elif self.name == Direction.TOP_LEFT.name:
+            return self.BOTTOM_RIGHT
+        elif self.name == Direction.BOTTOM_RIGHT.name:
+            return Direction.TOP_LEFT
+
+        raise ValueError(f"No direction ?? `{self.name}`")
+
+
 ## Generation distributions and rates
 
 # Planet resource/influence distributions
