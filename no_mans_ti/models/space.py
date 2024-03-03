@@ -14,11 +14,17 @@ class Space:
         wormholes: Optional[set[Wormholes]] = None,
         anomalies: Optional[set[Anomalies]] = None,
     ) -> None:
-        if wormholes is None and anomalies is None:
-            self.randomize_space()
-        else:
+        if wormholes is not None and anomalies is not None:
             self.wormholes = wormholes
             self.anomalies = anomalies
+        else:
+            self.randomize_space()
+
+            if wormholes is not None:
+                self.wormholes = wormholes
+            
+            if anomalies is not None:
+                self.anomalies = anomalies
 
     def __str__(self):
         """String repr."""

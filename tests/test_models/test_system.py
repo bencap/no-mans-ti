@@ -13,7 +13,7 @@ LARGER_INFLUENCE = random.randint(RANDOM_RESOURCES + 1, 5)
 
 class TestSystemSpend:
     def test_gross_spend_empty(self):
-        system = System(planets=set(), space=set())
+        system = System(planets=set())
         assert system.gross_spend().resources == 0
         assert system.gross_spend().influence == 0
 
@@ -21,8 +21,7 @@ class TestSystemSpend:
         system = System(
             planets=set(
                 (Planet(resources=0, influence=0, trait=PlanetTrait.CULTURAL),)
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().resources == 0
         assert system.gross_spend().influence == 0
@@ -35,8 +34,7 @@ class TestSystemSpend:
                     Planet(resources=0, influence=0, trait=PlanetTrait.INDUSTRIAL),
                     Planet(resources=0, influence=0, trait=PlanetTrait.HAZARDOUS),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().resources == 0
         assert system.gross_spend().influence == 0
@@ -51,8 +49,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().resources == RANDOM_RESOURCES
         assert system.gross_spend().influence == 1
@@ -67,8 +64,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().resources == 1
         assert system.gross_spend().influence == RANDOM_INFLUENCE
@@ -83,8 +79,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().resources == RANDOM_RESOURCES
         assert system.gross_spend().influence == RANDOM_INFLUENCE
@@ -109,14 +104,13 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.gross_spend().influence == 1 + (2 * RANDOM_INFLUENCE)
         assert system.gross_spend().resources == 1 + (2 * RANDOM_RESOURCES)
 
     def test_optimal_spend_empty(self):
-        system = System(planets=set(), space=set())
+        system = System(planets=set())
         assert system.optimal_spend().resources == 0
         assert system.optimal_spend().influence == 0
 
@@ -124,8 +118,7 @@ class TestSystemSpend:
         system = System(
             planets=set(
                 (Planet(resources=0, influence=0, trait=PlanetTrait.CULTURAL),)
-            ),
-            space=set(),
+            )
         )
         assert system.optimal_spend().resources == 0
         assert system.optimal_spend().influence == 0
@@ -138,8 +131,7 @@ class TestSystemSpend:
                     Planet(resources=0, influence=0, trait=PlanetTrait.INDUSTRIAL),
                     Planet(resources=0, influence=0, trait=PlanetTrait.HAZARDOUS),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.optimal_spend().resources == 0
         assert system.optimal_spend().influence == 0
@@ -154,8 +146,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.optimal_spend().resources == LARGER_RESOURCES
         assert system.optimal_spend().influence == 0
@@ -170,8 +161,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.optimal_spend().resources == 0
         assert system.optimal_spend().influence == LARGER_INFLUENCE
@@ -186,8 +176,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert system.optimal_spend().resources == RANDOM_RESOURCES / 2
         assert system.optimal_spend().influence == RANDOM_INFLUENCE / 2
@@ -212,8 +201,7 @@ class TestSystemSpend:
                         trait=PlanetTrait.CULTURAL,
                     ),
                 )
-            ),
-            space=set(),
+            )
         )
         assert (
             system.optimal_spend().influence
@@ -236,29 +224,12 @@ class TestSystemAdjacency:
             [adjacent_system is None for adjacent_system in system.neighbors.values()]
         )
 
-    def test_top_bottom_adjacency(self):
-        bottom_system = System()
-        top_system = System()
+    @pytest.mark.parametrize("direction", Direction._member_map_.values())
+    def test_adjacency(self, direction: Direction):
+        reference = System()
+        neighbor = System()
 
-        bottom_system.associate_system(top_system, Direction.TOP)
+        reference.associate_system(neighbor, direction)
 
-        assert bottom_system.neighbors[Direction.TOP] == top_system
-        assert top_system.neighbors[Direction.BOTTOM] == bottom_system
-
-    def test_top_left_bottom_right_adjacency(self):
-        bottom_system = System()
-        top_system = System()
-
-        bottom_system.associate_system(top_system, Direction.TOP_LEFT)
-
-        assert bottom_system.neighbors[Direction.TOP_LEFT] == top_system
-        assert top_system.neighbors[Direction.BOTTOM_RIGHT] == bottom_system
-
-    def test_top_right_bottom_left_adjacency(self):
-        bottom_system = System()
-        top_system = System()
-
-        bottom_system.associate_system(top_system, Direction.TOP_RIGHT)
-
-        assert bottom_system.neighbors[Direction.TOP_RIGHT] == top_system
-        assert top_system.neighbors[Direction.BOTTOM_LEFT] == bottom_system
+        assert reference.neighbors[direction] == neighbor
+        assert neighbor.neighbors[direction.mirror()] == reference

@@ -22,8 +22,9 @@ class TestExplicitPlanetCreation:
         assert planet.values.influence == 0
 
     def test_no_planet_trait(self):
-        with pytest.raises(AssertionError):
-            Planet(resources=0, influence=0, trait=None, specialty=None)
+        planet = Planet(resources=0, influence=0, trait=None, specialty=None)
+
+        assert planet.trait in PlanetTrait
 
     def test_planet_trait(self):
         planet = Planet(
@@ -72,13 +73,16 @@ class TestRandomPlanetCreation:
         for i in range(100000):
             planet = Planet()
 
-            self.resource_counts[planet.values.resources] += 1
-            self.influence_counts[planet.values.influence] += 1
+            self.resource_counts[int(planet.values.resources)] += 1
+            self.influence_counts[int(planet.values.influence)] += 1
 
-            self.trait_counts[planet.trait] += 1
-            self.specialty_counts[planet.specialty] += 1
+            self.trait_counts[planet.trait.name] += 1
+            if planet.specialty:
+                self.specialty_counts[planet.specialty.name] += 1
+            else:
+                self.specialty_counts[None] += 1
 
-            self.generated_planets.append(Planet)
+            self.generated_planets.append(planet)
 
     # TODO
     def test_resource_distribution(self):
@@ -98,16 +102,48 @@ class TestRandomPlanetCreation:
         # must be ~25%.
         assert self.specialty_counts[None] / sum(self.specialty_counts.values()) < 0.77
         assert self.specialty_counts[None] / sum(self.specialty_counts.values()) > 0.73
-        
+
         # Assert that each tech skip appears ~6% of the time
-        assert self.specialty_counts[TechnologySpecialty.BLUE.name] / sum(self.specialty_counts.values()) < 0.07
-        assert self.specialty_counts[TechnologySpecialty.BLUE.name] / sum(self.specialty_counts.values()) > 0.05
-        assert self.specialty_counts[TechnologySpecialty.GREEN.name] / sum(self.specialty_counts.values()) < 0.07
-        assert self.specialty_counts[TechnologySpecialty.GREEN.name] / sum(self.specialty_counts.values()) > 0.05
-        assert self.specialty_counts[TechnologySpecialty.YELLOW.name] / sum(self.specialty_counts.values()) < 0.07
-        assert self.specialty_counts[TechnologySpecialty.YELLOW.name] / sum(self.specialty_counts.values()) > 0.05
-        assert self.specialty_counts[TechnologySpecialty.RED.name] / sum(self.specialty_counts.values()) < 0.07
-        assert self.specialty_counts[TechnologySpecialty.RED.name] / sum(self.specialty_counts.values()) > 0.05
+        assert (
+            self.specialty_counts[TechnologySpecialty.BLUE.name]
+            / sum(self.specialty_counts.values())
+            < 0.07
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.BLUE.name]
+            / sum(self.specialty_counts.values())
+            > 0.05
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.GREEN.name]
+            / sum(self.specialty_counts.values())
+            < 0.07
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.GREEN.name]
+            / sum(self.specialty_counts.values())
+            > 0.05
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.YELLOW.name]
+            / sum(self.specialty_counts.values())
+            < 0.07
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.YELLOW.name]
+            / sum(self.specialty_counts.values())
+            > 0.05
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.RED.name]
+            / sum(self.specialty_counts.values())
+            < 0.07
+        )
+        assert (
+            self.specialty_counts[TechnologySpecialty.RED.name]
+            / sum(self.specialty_counts.values())
+            > 0.05
+        )
 
 
 class TestOptimalSpend:

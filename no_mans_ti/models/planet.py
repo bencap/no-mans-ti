@@ -16,7 +16,7 @@ from no_mans_ti.constants import (
     HAZARDOUS_SKEWED,
     CULTURAL_SKEWED,
     INDUSTRIAL_SKEWED,
-    BASE_SPECIALTY_DISTRIBUTION
+    BASE_SPECIALTY_DISTRIBUTION,
 )
 from no_mans_ti.lib.planet_names import random_planet_name
 
@@ -34,15 +34,21 @@ class Planet:
         trait: Optional[PlanetTrait] = None,
         specialty: Optional[TechnologySpecialty] = None,
     ) -> None:
-        if resources is None and influence is None:
-            self.randomize_planet()
-
-        else:
+        if resources is not None and influence is not None and trait is not None:
             self.values = PlanetValues(resources, influence)
             self.specialty = specialty
-
-            assert trait, "Planet trait should not be `None`"
             self.trait = trait
+        else:
+            self.randomize_planet()
+
+            if resources is not None:
+                self.resources = resources
+
+            if influence is not None:
+                self.influence = influence
+
+            if trait is not None:
+                self.trait = trait
 
     def __str__(self):
         """String repr."""
@@ -87,14 +93,14 @@ class Planet:
             else:
                 return generated_value, seed_value
 
-        def randomize_planet_trait(resources: Optional[int], influence: Optional[int]):
+        def randomize_planet_trait(resources: Optional[int], influence: Optional[int]) -> PlanetTrait:
             """
             Generate a random planet trait weighted based on the provided
             resource and influence values. Alternatively, return a random
             trait if no resources or influence values are provided.
             """
             if not resources or not influence:
-                return random.choice(PlanetTrait._member_names_)
+                return random.choice([t for t in PlanetTrait])
 
             res_inf_diff = resources - influence
             if res_inf_diff > 1.5:
@@ -110,9 +116,7 @@ class Planet:
             """
             Generate a random planet specialty, or None.
             """
-            return random.choice(
-                BASE_SPECIALTY_DISTRIBUTION
-            )
+            return random.choice(BASE_SPECIALTY_DISTRIBUTION)
 
         resources, influence = randomize_planet_values()
         trait = randomize_planet_trait(resources, influence)

@@ -12,19 +12,27 @@ class System:
     planets: set[Planet]
     space: Space
 
-    neighbors: dict[Direction, "System"] = {
-        direction: None for direction in Direction._member_map_.values()
-    }
+    neighbors: dict[Direction, Optional["System"]]
 
     def __init__(
         self, planets: Optional[set[Planet]] = None, space: Optional[Space] = None
     ) -> None:
         # Generate an empty system by passing an empty set of planets.
-        if planets is None and space is None:
-            self.randomize_system()
-        else:
+        if planets and space:
             self.planets = planets
             self.space = space
+        else:
+            self.randomize_system()
+
+            if planets is not None:
+                self.planets = planets
+
+            if space is not None:
+                self.space = space
+
+        self.neighbors = {
+            direction: None for direction in Direction
+        }
 
     def __str__(self):
         """String repr."""
@@ -83,13 +91,14 @@ class System:
         spend.frozen = True
         return spend
 
-    def associate_system(self, system: type["System"], direction: Direction):
+    def associate_system(self, system: "System", direction: Direction):
         """
         Associate a system with a neighbor.
         """
         # Reset any prior associations if necessary
-        if self.neighbors[direction]:
-            self.neighbors[direction].neighbors[direction.mirror()] = None
+        prior_association = self.neighbors[direction]
+        if prior_association is not None:
+            prior_association.neighbors[direction.mirror()] = None
             self.neighbors[direction] = None
 
         self.neighbors[direction] = system

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Union
 
 
 ## Planet area stuff
@@ -7,8 +8,8 @@ from enum import Enum
 
 @dataclass
 class PlanetValues:
-    resources: int
-    influence: int
+    resources: Union[int, float]
+    influence: Union[int, float]
 
     # Prevent accidental modification of planet values by default
     frozen = True
@@ -105,28 +106,28 @@ FIVE_SEEDED_RES_INF_DISTRIBUTION = (
 
 # Planet trait distributions
 HAZARDOUS_SKEWED = (
-    [PlanetTrait.HAZARDOUS.name] * 50
-    + [PlanetTrait.INDUSTRIAL.name] * 25
-    + [PlanetTrait.CULTURAL.name] * 25
+    [PlanetTrait.HAZARDOUS] * 50
+    + [PlanetTrait.INDUSTRIAL] * 25
+    + [PlanetTrait.CULTURAL] * 25
 )
 INDUSTRIAL_SKEWED = (
-    [PlanetTrait.HAZARDOUS.name] * 25
-    + [PlanetTrait.INDUSTRIAL.name] * 50
-    + [PlanetTrait.CULTURAL.name] * 25
+    [PlanetTrait.HAZARDOUS] * 25
+    + [PlanetTrait.INDUSTRIAL] * 50
+    + [PlanetTrait.CULTURAL] * 25
 )
 CULTURAL_SKEWED = (
-    [PlanetTrait.HAZARDOUS.name] * 25
-    + [PlanetTrait.INDUSTRIAL.name] * 25
-    + [PlanetTrait.CULTURAL.name] * 50
+    [PlanetTrait.HAZARDOUS] * 25
+    + [PlanetTrait.INDUSTRIAL] * 25
+    + [PlanetTrait.CULTURAL] * 50
 )
 
 # Planet specialty distributions
 BASE_SPECIALTY_DISTRIBUTION = (
     [None] * 75
-    + [TechnologySpecialty.BLUE.name] * 6
-    + [TechnologySpecialty.GREEN.name] * 6
-    + [TechnologySpecialty.RED.name] * 6
-    + [TechnologySpecialty.YELLOW.name] * 6
+    + [TechnologySpecialty.BLUE] * 6
+    + [TechnologySpecialty.GREEN] * 6
+    + [TechnologySpecialty.RED] * 6
+    + [TechnologySpecialty.YELLOW] * 6
 )
 
 # Space object distribution
