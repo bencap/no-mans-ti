@@ -30,9 +30,7 @@ class System:
             if space is not None:
                 self.space = space
 
-        self.neighbors = {
-            direction: None for direction in Direction
-        }
+        self.neighbors = {direction: None for direction in Direction}
 
     def __str__(self):
         """String repr."""
@@ -48,6 +46,35 @@ class System:
         output += f"--------------\nGross spend: {self.gross_spend()}\nOptimal spend: {self.optimal_spend()}"
 
         return output
+    
+    def __compact_str__(self):
+        """Compact string repr."""
+        str_size = 26
+
+        # XXX: Ugly!
+        def buffer(input):
+            str_len = len(input)
+            buf_len = str_size - str_len
+            front = buf_len // 2
+            end = buf_len // 2
+            return (" " * front) + input + (" " * end)
+        
+        planet_repr = [planet.__compact_str__() for planet in self.planets]
+        
+        # XXX: So ugly!!
+        if len(planet_repr) == 1:
+            system_str = f"{buffer(planet_repr[0])}\n"
+        elif len(planet_repr) == 2:
+            system_str = f"{buffer(planet_repr[0] + ", " + planet_repr[1])}\n"
+        elif len(planet_repr) == 3:
+            system_str = f"{buffer(planet_repr[0] + ", " + planet_repr[1])}\n{buffer(planet_repr[2])}"
+        elif len(planet_repr) == 4:
+            system_str = f"{buffer(planet_repr[0] + ", " + planet_repr[1])}\n{buffer(planet_repr[2] + ", " + planet_repr[3])}"
+        else:
+            system_str = f"{buffer("--\n")}"
+
+        system_str += f"\n\n{buffer(self.space.__compact_str__())}"
+        return system_str
 
     def randomize_system(self):
         """
@@ -104,6 +131,19 @@ class System:
         self.neighbors[direction] = system
         system.neighbors[direction.mirror()] = self
 
+    def unassociate_system(self, direction: Direction):
+        """
+        Un-associate a system with a neighbor.
+        """
+        # Reset any prior associations if necessary
+        prior_association = self.neighbors[direction]
+        if prior_association is not None:
+            prior_association.neighbors[direction.mirror()] = None
+            self.neighbors[direction] = None
+
 
 if __name__ == "__main__":
-    print(System())
+    s = System()
+    print(s)
+    print()
+    print(s.__compact_str__())

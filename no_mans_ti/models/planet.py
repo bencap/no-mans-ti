@@ -54,6 +54,30 @@ class Planet:
         """String repr."""
         return f"\tResources: {self.values.resources}\n\tIfnluence: {self.values.influence}\n\tTrait: {self.trait}\n\tSpecialty: {self.specialty}"
 
+    def __compact_str__(self):
+        """Compact string repr."""
+        if self.trait == PlanetTrait.CULTURAL:
+            trait = "C"
+        elif self.trait == PlanetTrait.HAZARDOUS:
+            trait = "H"
+        elif self.trait == PlanetTrait.INDUSTRIAL:
+            trait = "I"
+        else:
+            trait = "_"
+
+        if self.specialty == TechnologySpecialty.BLUE:
+            spec = "B"
+        if self.specialty == TechnologySpecialty.GREEN:
+            spec = "G"
+        if self.specialty == TechnologySpecialty.YELLOW:
+            spec = "Y"
+        if self.specialty == TechnologySpecialty.RED:
+            spec = "R"
+        else:
+            spec = "_"
+
+        return f"({self.values.resources}, {self.values.influence}, {trait}, {spec})"
+
     def randomize_planet(self):
         """
         Randomizes the resources, influence, trait, and technology
@@ -93,7 +117,9 @@ class Planet:
             else:
                 return generated_value, seed_value
 
-        def randomize_planet_trait(resources: Optional[int], influence: Optional[int]) -> PlanetTrait:
+        def randomize_planet_trait(
+            resources: Optional[int], influence: Optional[int]
+        ) -> PlanetTrait:
             """
             Generate a random planet trait weighted based on the provided
             resource and influence values. Alternatively, return a random
